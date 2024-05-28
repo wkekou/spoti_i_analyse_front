@@ -5,12 +5,33 @@ import { format } from 'date-fns';
 
 const RecentTracks = () => {
   const [tracks, setTracks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/recent-tracks/')
-      .then(response => setTracks(response.data))
-      .catch(error => console.error('Error fetching recent tracks:', error));
+    const fetchRecentTracks = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/recent-tracks/');
+        // Vérifiez que la réponse contient un tableau
+        if (Array.isArray(response.data)){
+          setTracks(response.data);
+        } else {
+          console.error('Unexpected response format:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching recent tracks:', error);
+      }
+    };
+
+    fetchRecentTracks();
   }, []);
+
+  if (loading) {
+    return <Typography variant="h6">Loading...</Typography>;
+  }
+
+  if (tracks.length === 0) {
+    return <Typography variant="h6">No recent tracks found.</Typography>;
+  }
 
   return (
     <div>
@@ -27,11 +48,7 @@ const RecentTracks = () => {
               primary={track.name}
               secondary={
                 <>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    color="textPrimary"
-                  >
+                  <Typography component="span" variant="body2" color="textPrimary">
                     {track.artist}
                   </Typography>
                   {` — ${format(new Date(track.played_at), 'PPP p')}`}

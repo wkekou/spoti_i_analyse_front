@@ -6,22 +6,34 @@ import { format } from 'date-fns';
 const ListeningHistory = () => {
   const [history, setHistory] = useState([]);
   const [nextPageUrl, setNextPageUrl] = useState('http://localhost:8000/api/listening-history/');
+  const [loading, setLoading] = useState(true);
 
   const fetchListeningHistory = async () => {
     if (!nextPageUrl) return;
 
     try {
       const response = await axios.get(nextPageUrl);
-      setHistory(prevHistory => [...prevHistory, ...response.data.results]);
+      const newHistory = response.data.results ? response.data.results : response.data;
+      setHistory(prevHistory => [...prevHistory, ...newHistory]);
       setNextPageUrl(response.data.next);
     } catch (error) {
-      console.error('Error fetching listening history:', error); 
+      console.error('Error fetching listening history:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchListeningHistory();
   }, []);
+
+  if (loading) {
+    return <Typography variant="h6">Loading...</Typography>;
+  }
+
+  if (history.length === 0) {
+    return <Typography variant="h6">No listening history found.</Typography>;
+  }
 
   return (
     <div>
@@ -38,11 +50,7 @@ const ListeningHistory = () => {
               primary={track.name}
               secondary={
                 <>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    color="textPrimary"
-                  >
+                  <Typography component="span" variant="body2" color="textPrimary">
                     {track.artist}
                   </Typography>
                   {` — ${format(new Date(track.played_at), 'PPP p')}`}

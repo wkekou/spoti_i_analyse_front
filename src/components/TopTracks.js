@@ -5,12 +5,34 @@ import { format } from 'date-fns';
 
 const TopTracks = () => {
   const [tracks, setTracks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/top-tracks/')
-      .then(response => setTracks(response.data))
-      .catch(error => console.error('Error fetching top tracks:', error));
+    const fetchTopTracks = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/top-tracks/');
+        if (Array.isArray(response.data)) {
+          setTracks(response.data);
+        } else {
+          console.error('Unexpected response format:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching top tracks:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopTracks();
   }, []);
+
+  if (loading) {
+    return <Typography variant="h6">Loading...</Typography>;
+  }
+
+  if (tracks.length === 0) {
+    return <Typography variant="h6">No top tracks found.</Typography>;
+  }
 
   return (
     <div>

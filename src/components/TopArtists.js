@@ -4,12 +4,34 @@ import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Typography } from
 
 const TopArtists = () => {
   const [artists, setArtists] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/top-artists/')
-      .then(response => setArtists(response.data))
-      .catch(error => console.error('Error fetching top artists:', error));
+    const fetchTopArtists = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/top-artists/');
+        if (Array.isArray(response.data)) {
+          setArtists(response.data);
+        } else {
+          console.error('Unexpected response format:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching top artists:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopArtists();
   }, []);
+
+  if (loading) {
+    return <Typography variant="h6">Loading...</Typography>;
+  }
+
+  if (artists.length === 0) {
+    return <Typography variant="h6">No top artists found.</Typography>;
+  }
 
   return (
     <div>
