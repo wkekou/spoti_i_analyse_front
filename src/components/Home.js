@@ -4,18 +4,24 @@ import { Typography, Paper, Grid } from '@mui/material';
 
 
 const Home = () => {
-  const [setData] = useState([]);
+  const [data, setData] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/update-spotify-data/')
-      .then(response => setData(response.data))
-      .catch(error => console.error('Error updating spotify data:', error));
-  });
+    const updateData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/recent-tracks/'); // Remplacez par l'endpoint qui récupère les données
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    updateData();
+  }, []);
 
   return (
     <Paper elevation={3} style={{ padding: '20px', marginTop: '20px', backgroundColor: '#282828', color: '#FFFFFF' }}>
       <Typography variant="h3" component="h1" gutterBottom>
-        Welcome to G_wake Analytics
+        Welcome to Spotify Analytics
       </Typography>
       <Typography variant="body1" component="p" gutterBottom>
         Discover and analyze your listening habits with our powerful analytics tools.
