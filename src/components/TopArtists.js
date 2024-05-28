@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Typography } from '@mui/material';
 
 const TopArtists = () => {
   const [artists, setArtists] = useState([]);
@@ -12,12 +13,34 @@ const TopArtists = () => {
 
   return (
     <div>
-      <h2>Top Artists</h2>
-      <ul>
+      <Typography variant="h4" component="h2" gutterBottom>
+        Top Artists
+      </Typography>
+      <List>
         {artists.map((artist, index) => (
-          <li key={index}>{artist.name}</li>
+          <ListItem key={index} alignItems="flex-start">
+            <ListItemAvatar>
+              <Avatar alt={artist.name} src={artist.image_url} />
+            </ListItemAvatar>
+            <ListItemText
+              primary={artist.name}
+              secondary={
+                <>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    color="textPrimary"
+                  >
+                    {artist.description ? artist.description : "No description available"}
+                  </Typography>
+                  <br />
+                  {artist.is_followed ? "You are following this artist" : "You are not following this artist"}
+                </>
+              }
+            />
+          </ListItem>
         ))}
-      </ul>
+      </List>
     </div>
   );
 }
