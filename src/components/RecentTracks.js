@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 
 const RecentTracks = () => {
   const [tracks, setTracks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  //const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRecentTracks = async () => {
@@ -25,9 +25,9 @@ const RecentTracks = () => {
     fetchRecentTracks();
   }, []);
 
-  if (loading) {
+  /*if (loading) {
     return <Typography variant="h6">Loading...</Typography>;
-  }
+  }*/
 
   if (tracks.length === 0) {
     return <Typography variant="h6">No recent tracks found.</Typography>;
